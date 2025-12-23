@@ -1,0 +1,15 @@
+node_modules/
+.next/
+.env
+.env.local
+.DS_Store
+dist/
+build/
+.turbo/
+.vercel/
+coverage/
+*.tsbuildinfo
+
+# Logs - ignore all except README
+logs/**/*.log
+!logs/README.md
