@@ -22,7 +22,7 @@ export const comparePassword = async (
 };
 
 export const generateToken = (payload: JWTPayload): string => {
-  return jwt.sign(payload, JWT_SECRET, { expiresIn: JWT_EXPIRY });
+  return jwt.sign(payload, JWT_SECRET as string, { expiresIn: JWT_EXPIRY as any });
 };
 
 export const verifyToken = (token: string): JWTPayload | null => {

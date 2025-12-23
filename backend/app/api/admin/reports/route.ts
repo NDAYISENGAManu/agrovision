@@ -121,10 +121,10 @@ async function generateDiagnosesReport(dateFilter: any) {
   const [totalDiagnoses, diseaseDistribution, accuracyStats] = await Promise.all([
     prisma.diagnosis.count({ where: dateFilter }),
     prisma.diagnosis.groupBy({
-      by: ['disease'],
+      by: ['diseaseName'],
       where: dateFilter,
       _count: true,
-      orderBy: { _count: { disease: 'desc' } },
+      orderBy: { _count: { diseaseName: 'desc' } },
       take: 10,
     }),
     prisma.diagnosis.aggregate({
@@ -156,8 +156,8 @@ async function generateMarketplaceReport(dateFilter: any) {
       orderBy: { views: 'desc' },
       select: {
         id: true,
-        title: true,
-        price: true,
+        cropType: true,
+        pricePerUnit: true,
         quantity: true,
         views: true,
         user: { select: { fullName: true } },

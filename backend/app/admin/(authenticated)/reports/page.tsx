@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "../dashboard/dashboard.module.css";
+import Loading from "../../components/Loading";
 
 export default function AdminReports() {
   const router = useRouter();
@@ -38,51 +39,28 @@ export default function AdminReports() {
     }
   };
 
+  const [loggingOut, setLoggingOut] = useState(false);
+
   const handleLogout = async () => {
-    await fetch("/api/admin/auth/logout", { method: "POST" });
-    router.push("/admin");
+    if (loggingOut) return;
+    setLoggingOut(true);
+    try {
+      const response = await fetch("/api/admin/auth/logout", { 
+        method: "POST",
+        credentials: 'include'
+      });
+      if (response.ok) {
+        router.push("/admin");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setLoggingOut(false);
+    }
   };
 
   return (
     <div className={styles.container}>
-      <aside className={styles.sidebar}>
-        <div className={styles.logo}>
-          <h2>🌾 AgroVision</h2>
-          <p>Admin Panel</p>
-        </div>
-
-        <nav className={styles.nav}>
-          <Link href="/admin/dashboard" className={styles.navItem}>
-            📊 Dashboard
-          </Link>
-          <Link href="/admin/users" className={styles.navItem}>
-            👥 Users
-          </Link>
-          <Link href="/admin/farms" className={styles.navItem}>
-            🚜 Farms
-          </Link>
-          <Link href="/admin/marketplace" className={styles.navItem}>
-            🛒 Marketplace
-          </Link>
-          <Link
-            href="/admin/reports"
-            className={styles.navItem + " " + styles.active}
-          >
-            📈 Reports
-          </Link>
-          <Link href="/admin/content" className={styles.navItem}>
-            📚 Content
-          </Link>
-          <Link href="/admin/settings" className={styles.navItem}>
-            ⚙️ Settings
-          </Link>
-        </nav>
-
-        <button onClick={handleLogout} className={styles.logoutBtn}>
-          🚪 Logout
-        </button>
-      </aside>
-
       <main className={styles.main}>
         <header className={styles.header}>
           <h1>Reports & Analytics</h1>

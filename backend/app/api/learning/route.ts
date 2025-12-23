@@ -12,7 +12,6 @@ export async function GET(request: NextRequest) {
     const category = searchParams.get('category');
     const type = searchParams.get('type'); // video, article, guide
     const search = searchParams.get('search');
-    const language = searchParams.get('language') || 'en';
 
     const skip = (page - 1) * limit;
 
@@ -20,12 +19,11 @@ export async function GET(request: NextRequest) {
 
     if (category) where.category = category;
     if (type) where.type = type;
-    if (language) where.language = language;
+
     if (search) {
       where.OR = [
         { title: { contains: search, mode: 'insensitive' } },
         { description: { contains: search, mode: 'insensitive' } },
-        { tags: { hasSome: [search] } },
       ];
     }
 
@@ -40,11 +38,9 @@ export async function GET(request: NextRequest) {
           description: true,
           type: true,
           category: true,
-          thumbnailUrl: true,
+          thumbnail: true,
           duration: true,
           views: true,
-          language: true,
-          tags: true,
           createdAt: true,
         },
         orderBy: { createdAt: 'desc' },

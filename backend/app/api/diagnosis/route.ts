@@ -106,7 +106,9 @@ export async function POST(request: NextRequest) {
         title: 'Diagnosis Complete',
         message: `Your crop has been diagnosed with ${randomDisease.name} (${Math.round(randomDisease.confidence * 100)}% confidence)`,
         type: 'DIAGNOSIS',
-        relatedId: diagnosis.id,
+        data: {
+          relatedId: diagnosis.id,
+        },
       },
     });
 

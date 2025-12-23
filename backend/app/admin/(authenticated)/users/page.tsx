@@ -4,14 +4,15 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "../dashboard/dashboard.module.css";
+import Loading from "../../components/Loading";
 
 interface User {
   id: string;
-  name: string;
+  fullName: string;
   email: string;
-  phone: string;
+  phoneNumber: string;
   role: string;
-  status: string;
+  verified: boolean;
   subscriptionTier: string;
   createdAt: string;
   _count: {
@@ -56,51 +57,32 @@ export default function AdminUsers() {
     }
   };
 
+  const [loggingOut, setLoggingOut] = useState(false);
+
   const handleLogout = async () => {
-    await fetch("/api/admin/auth/logout", { method: "POST" });
-    router.push("/admin");
+    if (loggingOut) return;
+    setLoggingOut(true);
+    try {
+      const response = await fetch("/api/admin/auth/logout", { 
+        method: "POST",
+        credentials: 'include'
+      });
+      if (response.ok) {
+        router.push("/admin");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    } finally {
+      setLoggingOut(false);
+    }
   };
+
+  if (loading) {
+    return <Loading text="Loading users..." />;
+  }
 
   return (
     <div className={styles.container}>
-      <aside className={styles.sidebar}>
-        <div className={styles.logo}>
-          <h2>🌾 AgroVision</h2>
-          <p>Admin Panel</p>
-        </div>
-
-        <nav className={styles.nav}>
-          <Link href="/admin/dashboard" className={styles.navItem}>
-            📊 Dashboard
-          </Link>
-          <Link
-            href="/admin/users"
-            className={styles.navItem + " " + styles.active}
-          >
-            👥 Users
-          </Link>
-          <Link href="/admin/farms" className={styles.navItem}>
-            🚜 Farms
-          </Link>
-          <Link href="/admin/marketplace" className={styles.navItem}>
-            🛒 Marketplace
-          </Link>
-          <Link href="/admin/reports" className={styles.navItem}>
-            📈 Reports
-          </Link>
-          <Link href="/admin/content" className={styles.navItem}>
-            📚 Content
-          </Link>
-          <Link href="/admin/settings" className={styles.navItem}>
-            ⚙️ Settings
-          </Link>
-        </nav>
-
-        <button onClick={handleLogout} className={styles.logoutBtn}>
-          🚪 Logout
-        </button>
-      </aside>
-
       <main className={styles.main}>
         <header className={styles.header}>
           <h1>User Management</h1>
@@ -163,8 +145,8 @@ export default function AdminUsers() {
             </select>
           </div>
 
-          {loading ? (
-            <p>Loading users...</p>
+          {users.length === 0 ? (
+            <p style={{ textAlign: "center", padding: "40px" }}>No users found.</p>
           ) : (
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
@@ -190,7 +172,7 @@ export default function AdminUsers() {
                     key={user.id}
                     style={{ borderBottom: "1px solid #F0F0F0" }}
                   >
-                    <td style={{ padding: "12px" }}>{user.name}</td>
+                    <td style={{ padding: "12px" }}>{user.fullName}</td>
                     <td style={{ padding: "12px" }}>{user.email}</td>
                     <td style={{ padding: "12px" }}>
                       <span
@@ -212,12 +194,12 @@ export default function AdminUsers() {
                           borderRadius: "4px",
                           fontSize: "12px",
                           background:
-                            user.status === "ACTIVE" ? "#E8F5E9" : "#FFEBEE",
+                            user.verified ? "#E8F5E9" : "#FFEBEE",
                           color:
-                            user.status === "ACTIVE" ? "#2E7D32" : "#C62828",
+                            user.verified ? "#2E7D32" : "#C62828",
                         }}
                       >
-                        {user.status}
+                        {user.verified ? "VERIFIED" : "PENDING"}
                       </span>
                     </td>
                     <td style={{ padding: "12px" }}>{user.subscriptionTier}</td>

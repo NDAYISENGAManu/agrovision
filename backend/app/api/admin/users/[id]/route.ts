@@ -14,14 +14,16 @@ const updateUserSchema = z.object({
 // GET user details
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const adminOrError = await requireAdmin(request);
   if (adminOrError instanceof Response) return adminOrError;
 
+  const { id } = await params;
+
   try {
     const user = await prisma.user.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         farms: {
           include: {
@@ -60,17 +62,19 @@ export async function GET(
 // PUT update user
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const adminOrError = await requireAdmin(request);
   if (adminOrError instanceof Response) return adminOrError;
+
+  const { id } = await params;
 
   try {
     const body = await request.json();
     const data = updateUserSchema.parse(body);
 
     const user = await prisma.user.update({
-      where: { id: params.id },
+      where: { id },
       data,
       select: {
         id: true,
@@ -96,14 +100,16 @@ export async function PUT(
 // DELETE user
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const adminOrError = await requireAdmin(request);
   if (adminOrError instanceof Response) return adminOrError;
 
+  const { id } = await params;
+
   try {
     await prisma.user.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return apiResponse(null, 'User deleted successfully');

@@ -61,10 +61,12 @@ export async function GET(request: NextRequest) {
 // PUT moderate listing
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   const adminOrError = await requireAdmin(request);
   if (adminOrError instanceof Response) return adminOrError;
+
+  const { id } = await params;
 
   try {
     const body = await request.json();
@@ -73,10 +75,9 @@ export async function PUT(
     const status = action === 'APPROVE' ? 'ACTIVE' : action === 'REJECT' ? 'REJECTED' : 'SUSPENDED';
 
     const listing = await prisma.marketListing.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         status: status as any,
-        moderationNotes: reason,
       },
     });
 

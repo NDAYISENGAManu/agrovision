@@ -1,7 +1,7 @@
 import { NextRequest } from 'next/server';
 import prisma from '@/lib/prisma';
 import { authMiddleware } from '@/middleware/auth';
-import { successResponse, handleApiError } from '@/utils/apiResponse';
+import { successResponse, errorResponse, handleApiError } from '@/utils/apiResponse';
 import { validate, createCropSchema } from '@/utils/validation';
 
 // GET all crops for authenticated user
@@ -83,6 +83,7 @@ export const POST = authMiddleware(async (req: NextRequest) => {
     const crop = await prisma.crop.create({
       data: {
         ...validatedData,
+        cropType: validatedData.cropType as any,
         totalCost,
         plantingDate: new Date(validatedData.plantingDate),
         expectedHarvestDate: validatedData.expectedHarvestDate

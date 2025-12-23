@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import styles from "./dashboard.module.css";
+import Loading from "../../components/Loading";
 
 interface DashboardStats {
   totalUsers: number;
@@ -21,6 +22,7 @@ export default function AdminDashboard() {
   const router = useRouter();
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loggingOut, setLoggingOut] = useState(false);
 
   useEffect(() => {
     fetchDashboardStats();
@@ -43,58 +45,36 @@ export default function AdminDashboard() {
   };
 
   const handleLogout = async () => {
-    await fetch("/api/admin/auth/logout", { method: "POST" });
-    router.push("/admin");
+    if (loggingOut) return; // Prevent double-clicks
+    
+    setLoggingOut(true);
+    try {
+      const response = await fetch("/api/admin/auth/logout", { 
+        method: "POST",
+        credentials: 'include' // Include cookies
+      });
+      
+      if (response.ok) {
+        // Successfully logged out, redirect to login
+        router.push("/admin");
+      } else {
+        console.error("Logout failed");
+        alert("Failed to logout. Please try again.");
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("An error occurred during logout.");
+    } finally {
+      setLoggingOut(false);
+    }
   };
 
   if (loading) {
-    return (
-      <div className={styles.container}>
-        <div className={styles.loading}>Loading dashboard...</div>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (
     <div className={styles.container}>
-      <aside className={styles.sidebar}>
-        <div className={styles.logo}>
-          <h2>🌾 AgroVision</h2>
-          <p>Admin Panel</p>
-        </div>
-
-        <nav className={styles.nav}>
-          <Link
-            href="/admin/dashboard"
-            className={styles.navItem + " " + styles.active}
-          >
-            📊 Dashboard
-          </Link>
-          <Link href="/admin/users" className={styles.navItem}>
-            👥 Users
-          </Link>
-          <Link href="/admin/farms" className={styles.navItem}>
-            🚜 Farms
-          </Link>
-          <Link href="/admin/marketplace" className={styles.navItem}>
-            🛒 Marketplace
-          </Link>
-          <Link href="/admin/reports" className={styles.navItem}>
-            📈 Reports
-          </Link>
-          <Link href="/admin/content" className={styles.navItem}>
-            📚 Content
-          </Link>
-          <Link href="/admin/settings" className={styles.navItem}>
-            ⚙️ Settings
-          </Link>
-        </nav>
-
-        <button onClick={handleLogout} className={styles.logoutBtn}>
-          🚪 Logout
-        </button>
-      </aside>
-
       <main className={styles.main}>
         <header className={styles.header}>
           <h1>Dashboard Overview</h1>

@@ -4,14 +4,14 @@ import { authMiddleware } from '@/middleware/auth';
 import { successResponse, errorResponse, handleApiError } from '@/utils/apiResponse';
 
 interface RouteContext {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }
 
 // GET single farm
 export const GET = authMiddleware(async (req: NextRequest, context: RouteContext) => {
   try {
     const user = (req as any).user;
-    const { id } = context.params;
+    const { id } = await context.params;
 
     const farm = await prisma.farm.findFirst({
       where: {
@@ -53,7 +53,7 @@ export const GET = authMiddleware(async (req: NextRequest, context: RouteContext
 export const PUT = authMiddleware(async (req: NextRequest, context: RouteContext) => {
   try {
     const user = (req as any).user;
-    const { id } = context.params;
+    const { id } = await context.params;
     const body = await req.json();
 
     const farm = await prisma.farm.findFirst({
@@ -79,7 +79,7 @@ export const PUT = authMiddleware(async (req: NextRequest, context: RouteContext
 export const DELETE = authMiddleware(async (req: NextRequest, context: RouteContext) => {
   try {
     const user = (req as any).user;
-    const { id } = context.params;
+    const { id } = await context.params;
 
     const farm = await prisma.farm.findFirst({
       where: { id, userId: user.userId },

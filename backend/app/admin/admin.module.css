@@ -1,0 +1,26 @@
+.container {
+    display: flex;
+    min-height: 100vh;
+    background: #F5F5F5;
+}
+
+.main {
+    flex: 1;
+    padding: 30px;
+    overflow-y: auto;
+}
+
+.header {
+    margin-bottom: 30px;
+}
+
+.header h1 {
+    font-size: 32px;
+    color: #1B4332;
+    margin: 0 0 10px 0;
+}
+
+.header p {
+    color: #666;
+    margin: 0;
+}

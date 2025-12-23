@@ -42,6 +42,7 @@ export async function GET(request: NextRequest) {
           email: true,
           phoneNumber: true,
           role: true,
+          verified: true,
           subscriptionTier: true,
           createdAt: true,
           _count: {
