@@ -55,7 +55,6 @@ export default function AdminDashboard() {
       });
       
       if (response.ok) {
-        // Successfully logged out, redirect to login
         router.push("/admin");
       } else {
         console.error("Logout failed");

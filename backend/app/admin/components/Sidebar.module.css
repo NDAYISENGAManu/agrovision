@@ -16,12 +16,14 @@
 .logo h2 {
     margin: 0 0 5px 0;
     font-size: 24px;
+    color: #95D5B2;
 }
 
 .logo p {
     margin: 0;
     font-size: 12px;
     color: #95D5B2;
+    text-align: center;
 }
 
 .nav {

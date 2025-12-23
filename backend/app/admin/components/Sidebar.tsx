@@ -48,7 +48,7 @@ export default function Sidebar() {
       <div className={styles.logo}>
         <Link href="/admin/dashboard" style={{ textDecoration: 'none', color: 'inherit' }}>
           <h2>🌾 AgroVision</h2>
-          <p>Admin Panel</p>
+          <p>Admin Control Panel window</p>
         </Link>
       </div>
 
