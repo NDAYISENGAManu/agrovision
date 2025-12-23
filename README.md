@@ -10,13 +10,12 @@
 ## 📋 Table of Contents
 
 - [Overview](#overview)
+- [Architecture](#architecture)
 - [Features](#features)
 - [Tech Stack](#tech-stack)
 - [Project Structure](#project-structure)
 - [Getting Started](#getting-started)
-- [Admin Backoffice](#admin-backoffice)
 - [Documentation](#documentation)
-- [Screenshots](#screenshots)
 - [Contributing](#contributing)
 - [License](#license)
 
@@ -41,6 +40,15 @@ A mobile-first platform that provides:
 - 🛒 **E-Marketplace**: Direct farmer-to-buyer connections
 - 📚 **Learning Center**: Educational content in local languages
 - 💬 **Community Forum**: Peer-to-peer knowledge sharing
+
+## 🏗️ Architecture
+
+AgroVision is built with a modern, decoupled architecture:
+
+- **Backend (Next.js)**: A robust REST API built with Next.js 14, handling business logic, database management, and authentication. It also includes a comprehensive Admin Backoffice UI.
+- **Mobile (Flutter)**: A cross-platform mobile application for farmers and buyers, built with Flutter for a seamless experience on both Android and iOS.
+- **Database (PostgreSQL)**: A relational database managed via Prisma ORM for type-safe data access.
+- **AI/ML**: Integrated on-device (mobile) and via API (backend) for real-time crop disease diagnosis.
 
 ## ✨ Features
 
@@ -148,70 +156,48 @@ A mobile-first platform that provides:
 
 ## 📁 Project Structure
 
+The project is organized into two main standalone applications within this repository:
+
 ```
 AgroVision/
 ├── backend/                    # Next.js Backend API + Admin Backoffice
 │   ├── app/
-│   │   ├── api/
-│   │   │   ├── auth/          # Authentication endpoints
-│   │   │   ├── admin/         # Admin API routes
+│   │   ├── api/               # REST API Endpoints
+│   │   │   ├── auth/          # Authentication (JWT)
+│   │   │   ├── admin/         # Platform administration
 │   │   │   ├── farms/         # Farm management
 │   │   │   ├── crops/         # Crop tracking
 │   │   │   ├── diagnosis/     # AI disease diagnosis
 │   │   │   ├── marketplace/   # E-marketplace
 │   │   │   ├── weather/       # Weather data
-│   │   │   ├── learning/      # Learning content
+│   │   │   ├── learning/      # Educational content
 │   │   │   └── forum/         # Community forum
-│   │   └── admin/             # Admin Backoffice UI
-│   │       ├── dashboard/
-│   │       ├── users/
-│   │       ├── reports/
-│   │       └── marketplace/
-│   ├── lib/                   # Shared libraries
-│   ├── middleware/            # Auth & validation
-│   ├── utils/                 # Utility functions
-│   ├── prisma/
-│   │   └── schema.prisma      # Database schema
-│   └── package.json
+│   │   └── admin/             # Admin Backoffice Dashboard UI
+│   ├── lib/                   # Database & Auth shared utilities
+│   ├── middleware/            # Security & Auth middleware
+│   ├── utils/                 # Helper functions & validation
+│   └── prisma/                # Database schema (schema.prisma)
 │
 ├── mobile/                     # Flutter Mobile App
 │   ├── lib/
-│   │   ├── main.dart
-│   │   ├── core/              # Core utilities
-│   │   │   ├── router/
-│   │   │   ├── theme/
-│   │   │   ├── services/
-│   │   │   └── constants/
-│   │   └── features/          # Feature modules
-│   │       ├── auth/
-│   │       ├── dashboard/
-│   │       ├── farms/
-│   │       ├── diagnosis/
-│   │       ├── marketplace/
-│   │       ├── weather/
-│   │       ├── learning/
-│   │       ├── forum/
-│   │       └── profile/
-│   ├── assets/
-│   │   ├── images/
-│   │   ├── icons/
-│   │   ├── animations/
-│   │   └── models/           # TFLite models
-│   └── pubspec.yaml
+│   │   ├── core/              # Global utilities, theme, and router
+│   │   └── features/          # Feature-first modules
+│   │       ├── auth/          # Login/Register & Onboarding
+│   │       ├── dashboard/     # User home screen
+│   │       ├── farms/         # Farm & Crop management
+│   │       ├── diagnosis/     # AI camera & TFLite integration
+│   │       ├── marketplace/   # P2P trading
+│   │       ├── weather/       # Real-time weather alerts
+│   │       ├── learning/      # Video & Article center
+│   │       └── forum/         # Peer-to-peer discussions
+│   └── assets/                # App assets & AI models (.tflite)
 │
-├── ai-models/                 # AI/ML Models
-│   ├── training/             # Training scripts
-│   ├── datasets/             # Training data
-│   ├── models/               # Trained models
-│   └── api/                  # FastAPI serving
-│
-├── docs/                      # Documentation
+├── docs/                      # Comprehensive Project Documentation
 │   ├── API_DOCUMENTATION.md
 │   ├── UI_UX_DESIGN.md
 │   ├── BUSINESS_PLAN.md
 │   ├── PITCH_DECK.md
-│   ├── BACKOFFICE_GUIDE.md  # Admin backoffice guide
-│   └── DATABASE_SCHEMA.md
+│   └── BACKOFFICE_GUIDE.md
 │
 └── README.md
 ```
@@ -266,45 +252,11 @@ npm run dev
 ```
 
 Backend API will be available at `http://localhost:3001`
+Admin UI will be available at `http://localhost:3001/admin`
 
-### Admin Backoffice Setup
+For detailed setup, see [backend/README.md](backend/README.md).
 
-The admin backoffice is included in the backend and runs on the same server.
-
-1. **Access the backoffice**
-```
-URL: http://localhost:3001/admin
-```
-
-2. **Create first admin user**
-```bash
-# Use Prisma Studio
-npm run db:studio
-
-# Or run SQL directly
-psql -U postgres agri-db
-```
-
-```sql
-INSERT INTO "User" (id, name, email, phone, password, role, status, "subscriptionTier")
-VALUES (
-  gen_random_uuid(),
-  'Admin User',
-  'admin@agrovision.rw',
-  '+250788000000',
-  -- Password: Admin@123 (hash this with bcrypt)
-  '$2a$10$...',
-  'ADMIN',
-  'ACTIVE',
-  'ENTERPRISE'
-);
-```
-
-3. **Login credentials**
-- Email: `admin@agrovision.rw`
-- Password: `Admin@123`
-
-For detailed backoffice documentation, see [docs/BACKOFFICE_GUIDE.md](docs/BACKOFFICE_GUIDE.md)
+See [docs/BACKOFFICE_GUIDE.md](docs/BACKOFFICE_GUIDE.md) for detailed admin functionality.
 
 ### Mobile Setup
 
